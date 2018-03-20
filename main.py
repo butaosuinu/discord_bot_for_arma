@@ -80,7 +80,7 @@ def viewHelp():
 if __name__ == '__main__':
   @client.event
   async def on_message(msg):
-    pattern = re.compile(r"^(それな|せやな|セヤナ|ｾﾔﾅ|seyana|sorena)")
+    pattern = re.compile(r"^(それな|せやな|セヤナ|ｾﾔﾅ|seyana|sorena|そうだよね)")
     if pattern.search(msg.content):
       if client.user != msg.author:
         m = 'わかる'
@@ -90,15 +90,15 @@ if __name__ == '__main__':
       m = 'やめたら？このゲーム'
       await client.send_message(msg.channel, m)
 
-    if msg.content.startswith('どうかな') and client.user != msg.author:
+    if re.search(r"どうかな", msg.content) and client.user != msg.author:
       with open('img/wakaru.jpg', 'rb') as f:
         await client.send_file(msg.channel, f)
 
-    if re.search(r"DJRN|だじ|ダジ|ﾀﾞｼﾞ", msg.content) and client.user != msg.author:
+    if re.search(r"DJRN|djrn|だじ|ダジ|ﾀﾞｼﾞ", msg.content) and client.user != msg.author:
       m = '汚いからやめて'
       await client.send_message(msg.channel, m)
 
-    if re.search(r"^(六|6)番ちゃんかわいい", msg.content) and client.user != msg.author:
+    if re.search(r"(六|6)番ちゃんかわいい", msg.content) and client.user != msg.author:
       m = 'えへへ…'
       await client.send_message(msg.channel, m)
 
