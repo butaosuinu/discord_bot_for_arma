@@ -67,6 +67,16 @@ def diffPreset(originalFileUrl, newFileUrl):
 
   return dist
 
+def viewHelp():
+  text = 'コマンド説明\n'
+  text += '--------------------------------\n'
+  text += '!diff_preset : プリセットファイルをアップロードする時にコメントにこのコマンドを入力するとプリセットの差分が見れるよ！\n'
+  text += '私のアナウンスに沿って差分を取りたい対象のプリセットファイルをアップロードしてね\n'
+  text += '!view_preset : プリセットの内容が見れるよ\n'
+  text += 'アナウンスに沿ってプリセットファイルをアップロードしてね\n'
+  text += '!help : この説明が見れるよ！\n'
+  return text
+
 if __name__ == '__main__':
   @client.event
   async def on_message(msg):
@@ -93,6 +103,8 @@ if __name__ == '__main__':
       await client.send_message(msg.channel, m)
 
 
+    if msg.content.startswith('!help') and client.user != msg.author:
+      await client.send_message(msg.channel, viewHelp())
 
 
     if msg.content.startswith('!diff_preset') and client.user != msg.author:
