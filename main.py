@@ -14,15 +14,6 @@ token = os.environ.get('TOKEN')
 
 client = discord.Client()
 
-def getDiffMcc(msg):
-  oldAddons = []
-  newAddons = []
-  if msg.attachments.filename.startswith('MCC'):
-    print(msg.attachments.filename)
-    fileUrl = msg.attachments.url
-    res = urllib.request.urlopen(filename).read()
-    doc = pq(res)
-
 
 def diffPreset(originalFileUrl, newFileUrl):
   headers = { "User-Agent" :  "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)" }
