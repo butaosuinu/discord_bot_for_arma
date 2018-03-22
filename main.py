@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 
 from pyquery import PyQuery as pq
 
+headers = { "User-Agent" :  "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)" }
+
 dotenvPath = join(dirname(__file__), '.env')
 load_dotenv(dotenvPath)
 
@@ -16,7 +18,6 @@ client = discord.Client()
 
 
 def diffPreset(originalFileUrl, newFileUrl):
-  headers = { "User-Agent" :  "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)" }
   oldAddons = []
   oldUrlList = []
   newAddons = []
@@ -55,6 +56,20 @@ def diffPreset(originalFileUrl, newFileUrl):
   dist += '削除したaddonはこれ！\n'
   for d in diffDel:
     dist += d + '\n'
+
+  return dist
+
+def viewPreset(url):
+  addonList = []
+  req = urllib.request.Request(url, None, headers)
+  res = urllib.request.urlopen(req).read()
+  doc = pq(res)
+  doc = doc('td').items()
+  addonList = list(filter(lambda i: i.attr('data-type') == 'DisplayName', doc))
+  addonList = [i.text() for i in addonList]
+  dist = 'プリセット内容：\n'
+  for addon in addonList:
+    dist += addon + '\n'
 
   return dist
 
@@ -97,6 +112,13 @@ if __name__ == '__main__':
     if msg.content.startswith('!help') and client.user != msg.author:
       await client.send_message(msg.channel, viewHelp())
 
+    if msg.content.startswith('!view_preset') and client.user != msg.author:
+      await client.send_message(msg.channel, '内容を見たいプリセットをアップしてね')
+      def check(msgn):
+        return msgn.attachments
+      newMsg = await client.wait_for_message(author=msg.author, check=check)
+      url = newMsg.attachments[0]['url']
+      await client.send_message(msg.channel, viewPreset(url))
 
     if msg.content.startswith('!diff_preset') and client.user != msg.author:
       if not msg.attachments:
