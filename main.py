@@ -17,28 +17,19 @@ token = os.environ.get('TOKEN')
 client = discord.Client()
 
 
-def diffPreset(originalFileUrl, newFileUrl):
-  oldAddons = []
-  oldUrlList = []
-  newAddons = []
-  newUrlList = []
-  req = urllib.request.Request(originalFileUrl, None, headers)
+def getAddonListToPreset(url):
+  req = urllib.request.Request(url, None, headers)
   res = urllib.request.urlopen(req).read()
   doc = pq(res)
-  reqNew = urllib.request.Request(newFileUrl, None, headers)
-  resNew = urllib.request.urlopen(reqNew).read()
-  docNew = pq(resNew)
-
   doc = doc('td').items()
-  docNew = docNew('td').items()
+  addonList = list(filter(lambda i: i.attr('data-type') == 'DisplayName', doc))
+  addonList = [i.text() for i in addonList]
 
-  oldAddons = list(filter(lambda i: i.attr('data-type') == 'DisplayName', doc))
-  # oldUrlList = [doc(div) for div in doc('')]
-  newAddons = list(filter(lambda i: i.attr('data-type') == 'DisplayName', docNew))
-  # newUrlList = [docNew(div) for div in docNew('')]
+  return addonList
 
-  oldAddons = [i.text() for i in oldAddons]
-  newAddons = [i.text() for i in newAddons]
+def diffPreset(originalFileUrl, newFileUrl):
+  oldAddons = getAddonListToPreset(originalFileUrl)
+  newAddons = getAddonListToPreset(newFileUrl)
 
   diffAdd = list(set(newAddons) - set(oldAddons))
   diffDel = list(set(oldAddons) - set(newAddons))
@@ -60,13 +51,7 @@ def diffPreset(originalFileUrl, newFileUrl):
   return dist
 
 def viewPreset(url):
-  addonList = []
-  req = urllib.request.Request(url, None, headers)
-  res = urllib.request.urlopen(req).read()
-  doc = pq(res)
-  doc = doc('td').items()
-  addonList = list(filter(lambda i: i.attr('data-type') == 'DisplayName', doc))
-  addonList = [i.text() for i in addonList]
+  addonList = getAddonListToPreset(url)
   dist = 'プリセット内容：\n'
   for addon in addonList:
     dist += addon + '\n'
