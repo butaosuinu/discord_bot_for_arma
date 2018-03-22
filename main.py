@@ -52,6 +52,7 @@ def diffPreset(originalFileUrl, newFileUrl):
 
 def viewPreset(url):
   addonList = getAddonListToPreset(url)
+  addonList.sort()
   dist = 'プリセット内容：\n'
   for addon in addonList:
     dist += addon + '\n'
