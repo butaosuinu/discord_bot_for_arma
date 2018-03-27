@@ -65,7 +65,7 @@ def viewHelp():
   text += '!diff_preset : プリセットファイルをアップロードする時にコメントにこのコマンドを入力するとプリセットの差分が見れるよ！\n'
   text += '私のアナウンスに沿って差分を取りたい対象のプリセットファイルをアップロードしてね\n'
   text += '!view_preset : プリセットの内容が見れるよ\n'
-  text += 'アナウンスに沿ってプリセットファイルをアップロードしてね\n'
+  text += 'プリセットファイルアップ時にコメントにこのコマンドを書き込むか、アナウンスに沿ってプリセットファイルをアップロードしてね\n'
   text += '!help : この説明が見れるよ！\n'
   return text
 
@@ -99,12 +99,16 @@ if __name__ == '__main__':
       await client.send_message(msg.channel, viewHelp())
 
     if msg.content.startswith('!view_preset') and client.user != msg.author:
-      await client.send_message(msg.channel, '内容を見たいプリセットをアップしてね')
-      def check(msgn):
-        return msgn.attachments
-      newMsg = await client.wait_for_message(author=msg.author, check=check)
-      url = newMsg.attachments[0]['url']
-      await client.send_message(msg.channel, viewPreset(url))
+      if not msg.attachments:
+        await client.send_message(msg.channel, '内容を見たいプリセットをアップしてね')
+        def check(msgn):
+          return msgn.attachments
+        newMsg = await client.wait_for_message(author=msg.author, check=check)
+        url = newMsg.attachments[0]['url']
+        await client.send_message(msg.channel, viewPreset(url))
+      if msg.attachments:
+        url = msg.attachments[0]['url']
+        await client.send_message(msg.channel, viewPreset(url))
 
     if msg.content.startswith('!diff_preset') and client.user != msg.author:
       if not msg.attachments:
@@ -118,9 +122,6 @@ if __name__ == '__main__':
         newMsg = await client.wait_for_message(author=msg.author, check=check)
         newFileUrl = newMsg.attachments[0]['url']
         await client.send_message(msg.channel, diffPreset(originalFileUrl, newFileUrl))
-
-
-
 
     if msg.content.startswith('!元ネタ') and client.user != msg.author:
       m = 'https://www.youtube.com/watch?v=OVuYIMa5XBw'
